@@ -11,4 +11,15 @@ Then use muscle to align sporecoatALL.fasta
 Then do the same thing again for transporter
 Get The actual script in here for some of this
 
-
+For the second question
+already have an aligned sequence from part 1: aligntransporter.fasta
+use hmmbuild 
+	local/bin/hmmbuild transporter.hmm aligntransporter.fasta
+Now need to search with this through the eight proteomes
+	local/bin/hmmsearch --tblout local/gene_sequences/OUTAnthrobacter.txt local/gene_sequences/transporter.hmm local/proteomes/Anthrobacter.fasta
+	--tblout will make a text file with just this table
+Will search for each of the eight proteomes, changing tblout name each time and proteome being searched each time
+Then combine all the tblout together into created all file
+	touch OUTtransporter.txt
+	cat OUT* >> OUTtransporter.txt
+Notes for Question 2
