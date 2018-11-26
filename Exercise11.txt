@@ -1,15 +1,25 @@
-Start with scp to the remote
-	ssh to remote
-	mkdir gene_sequences
-	in local: scp *.fasta (in gene_sequences) to local/ in remote
-Then make a file sporecoatALL.fasta
-	touch sporecoatALL.fasta makes a blank file
-	need to add a return to the end of each sporecoat0*.fasta or they'll start on the same line
-	cat sporecoat*.fasta >> sporecoatALL.fasta to put them all in one file
-Then use muscle to align sporecoatALL.fasta
-	muscleetc -in local/gene_sequences/sporecoatALL.fasta -out local/gene_sequences/alignsporecoat.fasta
-Then do the same thing again for transporter
-Get The actual script in here for some of this
+ssh nhermann@remote103.helios.nd.edu
+cd local
+mkdir gene_sequences
+#In local Terminal
+cd Biocomp-Fall2018-181116-Exercise11/gene_sequences
+scp *.fasta nhermann@remote103.helios.nd.edu:/afs/nd.edu/user16/nhermann/local/gene_sequences
+#In remote Terminal
+for file in sporecoat*
+do
+cat $file >> sporecoatAll.fasta
+done
+for file in transporter*
+do
+cat $file >> transporterAll.fasta
+done
+
+cd ../..
+muscle3.8.31_i86linux64 -in local/gene_sequences/sporecoatAll.fasta -out local/gene_sequences/sporecoatAlign.fasta
+muscle3.8.31_i86linux64 -in local/gene_sequences/transporterAll.fasta -out local/gene_sequences/transporterAlign.fasta
+#That's it for Question 1
+
+
 
 For the second question
 already have an aligned sequence from part 1: aligntransporter.fasta
