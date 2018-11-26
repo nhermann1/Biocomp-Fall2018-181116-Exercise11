@@ -1,0 +1,14 @@
+Start with scp to the remote
+	ssh to remote
+	mkdir gene_sequences
+	in local: scp *.fasta (in gene_sequences) to local/ in remote
+Then make a file sporecoatALL.fasta
+	touch sporecoatALL.fasta makes a blank file
+	need to add a return to the end of each sporecoat0*.fasta or they'll start on the same line
+	cat sporecoat*.fasta >> sporecoatALL.fasta to put them all in one file
+Then use muscle to align sporecoatALL.fasta
+	muscleetc -in local/gene_sequences/sporecoatALL.fasta -out local/gene_sequences/alignsporecoat.fasta
+Then do the same thing again for transporter
+Get The actual script in here for some of this
+
+
