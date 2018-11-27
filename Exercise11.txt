@@ -2,16 +2,27 @@ ssh nhermann@remote103.helios.nd.edu
 cd local
 mkdir gene_sequences
 #In local Terminal
-cd Biocomp-Fall2018-181116-Exercise11/gene_sequences
+cd Documents/Biocomp/Biocomp-Fall2018-181116-Exercise11/gene_sequences
 scp *.fasta nhermann@remote103.helios.nd.edu:/afs/nd.edu/user16/nhermann/local/gene_sequences
 #In remote Terminal
+mkdir proteomes
+#In local Terminal
+cd Documents/Biocomp/Biocomp-Fall2018-181116-Exercise11/proteomes
+scp *.fasta nhermann@remote103.helios.nd.edu:/afs/nd.edu/user16/nhermann/local/proteomes
+
+#In remote Terminal
+cd gene_sequences
+bash
 for file in sporecoat*
 do
 cat $file >> sporecoatAll.fasta
+echo >> sporecoatAll.fasta
 done
+
 for file in transporter*
 do
 cat $file >> transporterAll.fasta
+echo >> transporterAll.fasta
 done
 
 cd ../..
@@ -20,13 +31,20 @@ muscle3.8.31_i86linux64 -in local/gene_sequences/transporterAll.fasta -out local
 #That's it for Question 1
 
 local/bin/hmmbuild local/transporter.hmm local/gene_sequences/transporterAlign.fasta
-cd local/proteomes
-for file in *.fasta; do name=$(echo $file | sed "s/fasta/search/"); ../bin/hmmsearch --tblout ../search/$name ../transporter.hmm $file ; done
+cd local
+mkdir search
+cd proteomes
+for file in *.fasta
+do
+name=$(echo $file | sed "s/fasta/search/")
+../bin/hmmsearch --tblout ../search/$name ../transporter.hmm $file
+done
 
+cd ../search
 for file in *.search
-> do
-> name=$(echo $file | sed "s/.search//")
-> hits=$(grep -v ^# $file | wc -l)
-> echo $name,$hits >> hits.csv
-> done
+do
+name=$(echo $file | sed "s/.search//")
+hits=$(grep -v ^# $file | wc -l)
+echo $name,$hits >> hits.csv
+done
 
