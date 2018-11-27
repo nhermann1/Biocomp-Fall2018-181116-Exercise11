@@ -19,17 +19,14 @@ muscle3.8.31_i86linux64 -in local/gene_sequences/sporecoatAll.fasta -out local/g
 muscle3.8.31_i86linux64 -in local/gene_sequences/transporterAll.fasta -out local/gene_sequences/transporterAlign.fasta
 #That's it for Question 1
 
+local/bin/hmmbuild local/transporter.hmm local/gene_sequences/transporterAlign.fasta
+cd local/proteomes
+for file in *.fasta; do name=$(echo $file | sed "s/fasta/search/"); ../bin/hmmsearch --tblout ../search/$name ../transporter.hmm $file ; done
 
+for file in *.search
+> do
+> name=$(echo $file | sed "s/.search//")
+> hits=$(grep -v ^# $file | wc -l)
+> echo $name,$hits >> hits.csv
+> done
 
-For the second question
-already have an aligned sequence from part 1: aligntransporter.fasta
-use hmmbuild 
-	local/bin/hmmbuild transporter.hmm aligntransporter.fasta
-Now need to search with this through the eight proteomes
-	local/bin/hmmsearch --tblout local/gene_sequences/OUTAnthrobacter.txt local/gene_sequences/transporter.hmm local/proteomes/Anthrobacter.fasta
-	--tblout will make a text file with just this table
-Will search for each of the eight proteomes, changing tblout name each time and proteome being searched each time
-Then combine all the tblout together into created all file
-	touch OUTtransporter.txt
-	cat OUT* >> OUTtransporter.txt
-Notes for Question 2
