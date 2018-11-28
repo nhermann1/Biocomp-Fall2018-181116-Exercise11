@@ -1,50 +1,50 @@
-ssh nhermann@remote103.helios.nd.edu
-cd local
-mkdir gene_sequences
+ssh nhermann@remote103.helios.nd.edu #Enter the remote
+cd local #Go into this directory to work
+mkdir gene_sequences #Same directory in the remote, consistency is good
 #In local Terminal
-cd Documents/Biocomp/Biocomp-Fall2018-181116-Exercise11/gene_sequences
-scp *.fasta nhermann@remote103.helios.nd.edu:/afs/nd.edu/user16/nhermann/local/gene_sequences
+cd Documents/Biocomp/Biocomp-Fall2018-181116-Exercise11/gene_sequences #Need to be in this directory to get the files
+scp *.fasta nhermann@remote103.helios.nd.edu:/afs/nd.edu/user16/nhermann/local/gene_sequences #Move all the gene_sequences to gene_sequences in the remote
 #In remote Terminal
-mkdir proteomes
+mkdir proteomes #Doing the same as above for the proteomes
 #In local Terminal
 cd Documents/Biocomp/Biocomp-Fall2018-181116-Exercise11/proteomes
 scp *.fasta nhermann@remote103.helios.nd.edu:/afs/nd.edu/user16/nhermann/local/proteomes
 
 #In remote Terminal
-cd gene_sequences
-bash
-for file in sporecoat*
+cd gene_sequences #Go back to where the sequences are to start aligning them
+bash #Need to use bash for any for loops
+for file in sporecoat* #Select all the sporecoat gene sequences
 do
-cat $file >> sporecoatAll.fasta
-echo >> sporecoatAll.fasta
+cat $file >> sporecoatAll.fasta #Append this previously empty file with the contents of the sporecoat sequences
+echo >> sporecoatAll.fasta #Adds a blank at the end of each file, separates the sequences by line so they can be aligned
 done
 
-for file in transporter*
+for file in transporter* #Doing the same thing for the transporter gene sequences
 do
 cat $file >> transporterAll.fasta
 echo >> transporterAll.fasta
 done
 
-cd ../..
-muscle3.8.31_i86linux64 -in local/gene_sequences/sporecoatAll.fasta -out local/gene_sequences/sporecoatAlign.fasta
-muscle3.8.31_i86linux64 -in local/gene_sequences/transporterAll.fasta -out local/gene_sequences/transporterAlign.fasta
-#That's it for Question 1
+cd ../.. #Move back up to the main directory in the remote
+muscle3.8.31_i86linux64 -in local/gene_sequences/sporecoatAll.fasta -out local/gene_sequences/sporecoatAlign.fasta #Uses the muscle program to align all the sporecoat sequences into a new aligned file--in practice this adds blanks for missing portions of sequences where needed
+muscle3.8.31_i86linux64 -in local/gene_sequences/transporterAll.fasta -out local/gene_sequences/transporterAlign.fasta #Same as above but for the transporter sequences now
+#That's it for Question 1, final files are two aligned fasta files not included in the assignment submission
 
-local/bin/hmmbuild local/transporter.hmm local/gene_sequences/transporterAlign.fasta
-cd local
-mkdir search
-cd proteomes
-for file in *.fasta
+local/bin/hmmbuild local/transporter.hmm local/gene_sequences/transporterAlign.fasta #Still in main directory, go down to find the hmmbuild program to construct an HMM profile for transporter aligned sequences
+cd local 
+mkdir search #Make a new directory to put the tables that are about to be created into
+cd proteomes #Go to the example proteomes that are about to be searched using the HMM profile
+for file in *.fasta #The set includes all the proteome fasta files
 do
-name=$(echo $file | sed "s/fasta/search/")
-../bin/hmmsearch --tblout ../search/$name ../transporter.hmm $file
+name=$(echo $file | sed "s/fasta/search/") #Takes the name of the file and replaces .fasta with .search and makes it the name variable
+../bin/hmmsearch --tblout ../search/$name ../transporter.hmm $file #Uses hmmsearch with the transporter HMM profile to search through all the proteome fasta files and sends the output to a table named the same with the .search extension from the line above to the search directory
 done
 
-cd ../search
-for file in *.search
+cd ../search #Move into the directory with all the search output tables
+for file in *.search #Puts all the output tables into the set for the for loop
 do
-name=$(echo $file | sed "s/.search//")
-hits=$(grep -v ^# $file | wc -l)
-echo $name,$hits >> hits.csv
-done
+name=$(echo $file | sed "s/.search//") #Takes the name of the file and removes the extension (without replacing it with anything) and sets it as the name variable
+hits=$(grep -v ^# $file | wc -l) #Selects all the lines in the output table that don't start with a #(hashtag, pound, number sign, waffle, etc.) and then counts how many there are and makes that equal to the variable hits
+echo $name,$hits >> hits.csv #Prints the newly defined variables name and hits with a comma between and sends them to the previously empty hits.csv file
+done #This hits.csv file is then the final list of how many hits are in each example proteome and is attached with the submission
 
